@@ -1,0 +1,5 @@
+*.pem
+virt/
+certificates/
+migrations/
+*.db

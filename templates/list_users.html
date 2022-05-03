@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-4">
+            <h1>Lista de Usuarios</h1>
+        </div>
+        <div class="col-2">
+            <a class="btn btn-dark" href="{{url_for('add_user')}}">Agregar usuario</a>
+        </div>
+    </div>
+    
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <div class="row">
+                    <th scope="col-1">#</th>
+                    <th scope="col-6">Nombre</th>
+                    <th scope="col-4">Usuario</th>
+                    <th scope="col-1">Llave valida</th>
+                    <th scope="col-1"></th>
+                </div>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in our_users.values() %}
+            <tr>
+                <th scope="row">{{user["user"].id}}</th>
+                <td>{{user["user"].name}} {{user["user"].lastname}}</td>
+                <td>{{user["user"].user}}</td>
+                {% if user["user"].user == "admin" %}
+                <td></td>
+                {% elif user["key"].validity > now %}
+                <td> <b style="color:green"> Valida </b></td>
+                {% else %}
+                <td><a class="btn btn-outline-warning" href="{{url_for('generate_user_key', id=user['user'].id)}}">Actualizar Llave</a></td>
+                {% endif %}
+                <td><a class="btn btn-outline-secondary" href="{{url_for('update_user', id=user['user'].id)}}">Modificar</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% endblock %}
+</div>

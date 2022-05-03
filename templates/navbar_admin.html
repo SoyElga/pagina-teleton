@@ -1,0 +1,68 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <img src="{{url_for('static', filename='images/menu_icon.png')}}" alt="..." style="height: auto; width: 20px;" class="navbar-brand" data-bs-toggle="offcanvas" role="button" aria-controls="offcanvasExample" href="#offcanvasExample">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('admin_index')}}">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('upload_document')}}">Subir documento</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+</nav>
+
+<!--Slidebar que sale de la derecha-->
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" style="background-color: #212529;" aria-labelledby="offcanvasExampleLabel">
+  <div class="offcanvas-header">
+    <div class="container">
+      <div class="row">
+        <div class="text-end">
+          <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="text-center">
+          <img src="{{url_for('static', filename='images/user_icon.png')}}" alt="..." style="height: auto; width: 100px;" class="offcanvas-title">
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="offcanvas-body" style="color: white;">
+    <div class="container">
+      <div class="row">
+        <div class="text-center">
+          <h3>{{current_user.name}} {{current_user.lastname}}</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="text-center">
+          <h4>{{current_user.job}}</h4>
+        </div>
+      </div>
+      <br/>
+      <br/>
+      <br/>
+      <div class="row">
+        <a class="nav-link" style="color: white;" href="{{url_for('list_users')}}">Usuarios</a>
+      </div>
+      <div class="row">
+        <a class="nav-link" style="color: white;" href="{{url_for('documents')}}">Documentos</a>
+      </div>
+      <br/>
+      <br/>
+        <div class="row">
+          <div class="text-center">
+            <a href="{{url_for('logout')}}" class="btn btn-outline-danger">Cerrar sesión</a>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>

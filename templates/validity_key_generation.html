@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div class="shadow p-3 mb-5 bg-body rounded">
+                <div class="row">
+                    <h1>Usuario</h1>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col">
+                        Nombre: {{ user.name }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Apellido: {{ user.lastname }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Puesto: {{ user.job }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Usuario: {{ user.user }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Email: {{ user.email }}
+                    </div>
+                </div>           
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="row">
+                <h2>Llave</h2>
+            </div>
+            <br/>
+            {% if key.public_key%}
+            <div class="row">
+                Llave pública: {{key.public_key | short_name(50)}}
+            </div>
+            <div class="row">
+                Valida: {{key.validity}}
+            </div>
+            {% else %}
+            <div class="row">
+                El ususario no tiene llave registrada
+            </div>
+            {% endif %}
+            <br/>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    {{ form.validity(class='datepicker') }}
+                </div>
+                <br/>
+                <div class="row text-start">
+                    {{form.submit(class="btn btn-warning")}}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

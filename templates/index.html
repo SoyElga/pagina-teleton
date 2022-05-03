@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-6 ">
+            <h1><b>Bienvenido {{current_user.name}}</b></h1>
+        </div>
+        <div class="col-3">
+            <div class="row">
+                    {% if keys.validity < now%}
+                    <h4><b> Estado de llave: <span style="color: red;">Vencido</span></b></h4>
+                    
+                    {% elif not keys.downloaded%}
+                    <h4><b> Estado de llave: <span style="color: rgb(255, 196, 0);"> Lista </span></b></h4>
+                    <a onClick="reload_button_with_time(500)" href="{{url_for('get_keys', id=current_user.id)}}" class="btn btn-warning"><b>Descargar Firma</b></a>
+                    
+                    {% else %}
+                    <h4><b> Estado de llave: <span style="color: green;">Descargada</span></b></h4>
+
+                {%endif%}
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="row">
+        <h3>Firmas pendientes</h3>
+    </div>
+    <div class="row mt-2">
+        {% if signatures | length == 0 %}
+        <h5>No hay firmas solicitadas</h5>
+        {% else %}
+        {% for sign in signatures%}
+        <div class="card mt-2" style="width: 260px; margin-left: 10px;">
+            <div class="card-body">
+                <h5 class="card-title"><b>{{sign.name | short_name(13)}}</b></h5>
+                <hr>
+                <p class="card-text"><b>Fecha de registro: </b>{{sign.date_added | is_date}}</p>
+                <p class="card-text"><b>Vigente hasta: </b>{{sign.validity | is_date}}</p>
+                <br>
+                {% if sign.validity < now%}
+                <h5 style="color: red;">Vencido</h5>
+                {% elif sign.fingerprint == "" %}
+                <a href="{{url_for('sign_document', id=sign.id)}}" class="btn btn-warning"><b>Firmar</b></a>
+                {% elif not sign.checked%}
+                <h5 style="color: darkgoldenrod;">En verificación</h5>
+                {% else %}
+                <h5 style="color: green;">Firmado</h5>
+                {% endif %}
+                
+            </div>
+        </div>
+        {% endfor %}
+        {% endif%}
+    </div>
+    <br>
+    <div class="row">
+        <h3>Certificados</h3>
+    </div>
+    <div class="row mt-2">
+        {% for c in certificates%}
+        {{c.name}}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

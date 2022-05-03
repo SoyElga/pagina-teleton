@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <div class="shadow p-3 mb-5 bg-body rounded">
+                <div class="row">
+                    <h1>Documento</h1>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col">
+                        Nombre: {{ file.name }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Fecha de agregado: {{ file.date_added | is_date }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Validez: {{ file.validity | is_date }}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col">
+                        <a href="{{url_for('download_document', id=file.id)}}" class="btn btn-primary"><b>Descargar Documento</b></a>
+                    </div>
+                </div>           
+            </div>
+        </div>
+        <div class="col-7">
+            <div class="shadow p-3 mb-5 bg-body rounded">
+                <div class="row">
+                    <h1>Firmar</h1>
+                </div>
+                {% if signature.checked %}
+                <h3 style="color: green;">Documento Firmado</h3>
+                {% elif not signature.fingerprint == "" %}
+                <h3 style="color: darkgoldenrod;">Verificación de firma pendiente</h3>
+                {% elif key.validity < now %}
+                <h3 style="color: red;"> Llave vencida </h3>
+                <p>Por favor solicita una nueva llave para poder firmar este documento</p>
+                {% else %}
+                <form method="POST" enctype="multipart/form-data">
+                    {{form.hidden_tag()}}
+                    <div class="row mt-3">
+                        <div class="col-4">
+                            <div class="row mt-2">
+                              <h5>Clave privada:</h5>
+                            </div>
+                            <div class="row mt-2">
+                              <h5>Contraseña usuario: </h5>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row mt-2" style="margin-left: 0px;">
+                              <input type="file" name="file">
+                            </div>
+                            <div class="row mt-2" style="margin-left: 0px;">
+                                <div class="col-6">
+                                    {{form.password(class="form-control form-control-sm", placeholder="Contraseña")}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            {{form.submit(class="btn btn-warning")}}
+                        </div>
+                    </div>
+
+                </form>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

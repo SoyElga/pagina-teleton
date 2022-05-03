@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<div class="container">
+    <div class="row">
+        <div class="text-center">
+            <img src="{{url_for('static', filename='images/icon_teleton.png')}}" alt="..." class="img-fluid">
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="text-center fs-1"> Firma Digital</div>
+    </div>
+    <br/>
+    <br/>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row justify-content-md-center">
+            <div class="col-6">
+                {{ form.user(class="form-control", placeholder="Usuario") }}
+                <!-- <input class="form-control" type="text" placeholder="Usuario" aria-label="default input example"> -->
+            </div>
+        </div>
+        <br/>
+        <div class="row justify-content-md-center">
+            <div class="col-6">
+                {{ form.password(class="form-control", placeholder="Contraseña") }}
+                <!-- <input class="form-control" type="password" placeholder="Contraseña" aria-label="default input example"> -->
+            </div>
+        </div>
+        <br/>
+        <div class="row justify-content-md-center">
+            <div class="col-6 text-center">
+                {{form.submit(class="btn btn-warning")}}
+                <!-- <button type="button" class="btn btn-warning">Iniciar sesión</button> -->
+            </div>
+        </div>
+    </form>
+
+</div>
+<br>
+<br>
+<br>
+{% endblock %}

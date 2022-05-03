@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<div class="container">
+  <div class="row">
+    <h2>Subir documento</h2>
+  </div>
+  <div class="row">
+    <form method="POST" enctype="multipart/form-data">
+      {{form.hidden_tag()}}
+      <div class="row">
+        <div class="col-4">
+          <div class="row mt-2">
+            {{form.name(class="form-control form-control-sm", placeholder="Nombre")}}
+          </div>
+          <div class="row mt-2">
+            {{form.signers(class="form-control form-control-sm", placeholder="Firmantes", id="list_users")}}
+          </div>
+          <div class="row mt-2">
+              <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" style="width: 200px;" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Lista de usuarios</button>
+          </div>
+        </div>
+        <div class="col-1 offset-md-1">
+          <div class="row mt-2">
+            <h5>Archivo:</h5>
+          </div>
+          <div class="row mt-2">
+            <h5>Vigencia: </h5>
+          </div>
+        </div>
+        <div class="col-4 ">
+          <div class="row mt-2">
+            <input type="file" name="file">
+          </div>
+          <div class="row mt-2" style="margin-left: 0px;">
+            {{form.validity(class='datepicker')}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <div class="row mt-4">
+            {{form.submit(class="btn btn-warning", style="font-weight: bold;")}}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+
+
+
+
+
+<div class="offcanvas offcanvas-end" tabindex="-1" style="background-color: #212529; color:white" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-header">
+    <h5 id="offcanvasRightLabel">Seleccionar usuarios</h5>
+    <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+      <div class="col-12">
+        <input type="text" class="form-control" id="search-user-field" placeholder="Nombre">
+      </div>
+    </div>
+    <div class="row mt-2 justify-content-md-center">
+      {% for user in users %}
+      <div class="row mt-2" id="{{ user.name | replace(' ', '_') }}_{{ user.lastname | replace(' ', '_') }}_{{user.user}}", name="user">
+        <button type="button" onclick="add_user_to_list_button('{{user.user}}', '{{user.user}}_button')" class="btn btn-success text-start" id="{{user.user}}_button">
+          <h5>{{user.name}} {{user.lastname}}</h5>
+          <p>{{user.user}}</p>
+        </button>
+      </div>
+      {% endfor%}
+    </div>
+  </div>
+</div>
+{% endblock %}

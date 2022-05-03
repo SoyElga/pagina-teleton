@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+<div class="container">
+    <div class="row">
+        <h1>Documentos</h1>
+    </div>
+    <div class="row mt-4">
+      {%if files|length == 0%}
+      <h3>No hay documentos registrados</h3>
+      {% else %}
+      {% for i in files%}
+        <div class="card mt-2" style="width: 260px; margin-left: 10px;">
+          <div class="card-body">
+            <h5 class="card-title"><b>{{files[i]["Name"] | short_name(13)}}</b></h5>
+            <hr>
+            <p class="card-text"><b>Fecha de registro: </b>{{files[i]["Date_added"]}}</p>
+            <br>
+            {% if files[i]["Total_signatures"] == files[i]["Valid_signatures"] %}
+              <h5 style="color: green;"><b>Firmado por todos</b></h5>
+            {% else %}
+              {% if files[i]["Validity"] < now%}
+              <h5 style="color: red;">Vencido</h5>
+              {% else %}
+              <h5 style="color: darkgoldenrod;">Vigente</h5>
+              {% endif %}
+            {% endif %}
+            {% if files[i]["Total_signatures"] == files[i]["Valid_signatures"] %}
+            <p class="card-text">Firmas: <span style="color:green"><b>{{files[i]["Valid_signatures"]}}/{{files[i]["Total_signatures"]}}</b></span></p>
+            {% else %}
+            <p class="card-text">Firmas: <span style="color:red"><b>{{files[i]["Valid_signatures"]}}/{{files[i]["Total_signatures"]}}</b></span></p>
+            {% endif %}
+            <a href="{{url_for('document', id=files[i]['File_id'])}}" class="btn btn-warning"><b>Checar documento</b></a>
+          </div>
+        </div>
+      {% endfor %}
+      {% endif%}
+    </div>
+</div>
+
+
+{% endblock %}

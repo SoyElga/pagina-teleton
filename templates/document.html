@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <div class="shadow p-3 mb-5 bg-body rounded">
+                <div class="row">
+                    <h1>Documento</h1>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col">
+                        Nombre: {{ file.name }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Fecha de agregado: {{ file.date_added | is_date }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        Validez: {{ file.validity | is_date }}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col">
+                        <a href="{{url_for('download_document', id=file.id)}}" class="btn btn-primary"><b>Descargar Documento</b></a>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <a href="{{url_for('delete_document', id=file.id)}}" class="btn btn-danger">Eliminar Documento</a>
+                    </div>
+                </div>           
+            </div>
+        </div>
+        <div class="col">
+            <div class="shadow p-3 mb-5 bg-body rounded">
+                <div class="row mt-2">
+                    <h2>Firmantes</h2>
+                </div>
+                <br>
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Firma</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for signer in signers %}
+                        <tr>
+                            <th scope="row">{{signer + 1}}</th>
+                            {% if signers[signer] == "Usuario Borrado" %}
+                            <td style="color: darkgrey;"><i>Usuario borrado</i></td>
+                            <td></td>
+                            <td></td>
+                            {% else %}
+                          <td>{{signers[signer]["name"]}}</td>
+                          <td>{{signers[signer]["username"]}}</td>
+                          {% if signers[signer]["fingerprint"] == ""%}
+                          <td style="color: red;">No ha firmado</td>
+                          {% elif not signers[signer]["sign_checked"]%}
+                          <td><a href="{{url_for('verify_signature', id=signers[signer]['id_signature'])}}" onClick="reload_button_with_time(500)" id="disable_on_click" class="btn btn-warning">Verificar firma</a></td>
+                          {% else %}
+                          <td style="color: green;">Firmado</td>
+                          {% endif %}
+                          {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+                
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

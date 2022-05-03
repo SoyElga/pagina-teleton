@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<div class="container">
+    <div class="row">
+        <h1>Modificar usuario: {{user_to_update.user}}</h1>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-6">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col">
+                        {{ form.name(class="form-control form-control-sm", value=user_to_update.name) }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        {{ form.lastName(class="form-control form-control-sm", value=user_to_update.lastname) }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        {{ form.job(class="form-control form-control-sm", value=user_to_update.job) }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        {{ form.user(class="form-control form-control-sm", value=user_to_update.user) }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        {{ form.email(class="form-control form-control-sm", value=user_to_update.email) }}
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        {{ form.password(class="form-control form-control-sm") }}
+                    </div>
+                </div>
+                <br/>
+                <div class="row mt-1 justify-content-between">
+                    <div class="col-4">
+                        {{form.add(class="btn btn-warning")}}
+                    </div>
+                    <div class="col-4 text-end">
+                        <a class="btn btn-primary" href="{{url_for('generate_user_key', id=user_to_update.id)}}">Actualizar Firma</a>
+                    </div>
+                    <div class="col-4 text-end">
+                        <a class="btn btn-danger" href="{{url_for('delete_user', id=user_to_update.id)}}">Eliminar Ususario</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

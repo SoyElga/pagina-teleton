@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+{% endfor %}
+
+<div class="container">
+    <div class="row">
+        <h1>Agregar usuario</h1>
+    </div>
+    <br/>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-6">
+                {{ form.name(class="form-control form-control-sm", placeholder="Nombre") }}
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col-6">
+                {{ form.lastName(class="form-control form-control-sm", placeholder="Apellido") }}
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col-6">
+                {{ form.job(class="form-control form-control-sm", placeholder="Puesto") }}
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col-6">
+                {{ form.user(class="form-control form-control-sm", placeholder="Usuario") }}
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col-6">
+                {{ form.email(class="form-control form-control-sm", placeholder="Correo Electrónico") }}
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col-6">
+                {{ form.password(class="form-control form-control-sm", placeholder="Contraseña") }}
+            </div>
+        </div>
+        <br/>
+        <div class="row mt-1">
+            <div class="col-6 text-center">
+                {{form.add(class="btn btn-warning")}}
+            </div>
+        </div>
+    </form>
+</div>
+
+{% for field, errors in form.errors.items() %}
+<div class="alert alert-error">
+    {{ form[field].label }}: {{ ', '.join(errors) }}
+</div>
+{% endfor %}
+
+{% endblock %}

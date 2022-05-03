@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+<div class="container">
+    <div class="row">
+        <h1>Documentos por firmar</h1>
+    </div>
+    <div class="row mt-4">
+      {%if signatures|length == 0%}
+      <h3>No hay documentos por firmar</h3>
+      {% else %}
+      {% for sign in signatures%}
+        <div class="card mt-2" style="width: 260px; margin-left: 10px;">
+          <div class="card-body">
+            <h5 class="card-title"><b>{{sign.name | short_name(13)}}</b></h5>
+            <hr>
+            <p class="card-text"><b>Fecha de registro: </b>{{sign.date_added | is_date}}</p>
+            <p class="card-text"><b>Vigente hasta: </b>{{sign.validity | is_date}}</p>
+            <br>
+            {% if sign.validity < now%}
+            <h5 style="color: red;">Vencido</h5>
+            {% elif not sign.fingerprint == "" %}
+            <h5 style="color: green;">Firmado</h5>
+            {% else %}
+            <a href="{{url_for('sign_document', id=sign.id)}}" onClick="reload_button_with_time(1000)" id="disable_on_click" class="btn btn-warning"><b>Firmar</b></a>
+            {% endif %}
+            
+          </div>
+        </div>
+      {% endfor %}
+      {% endif%}
+    </div>
+</div>
+{% endblock %}
