@@ -3,3 +3,4 @@ virt/
 certificates/
 migrations/
 *.db
+basic_info.py

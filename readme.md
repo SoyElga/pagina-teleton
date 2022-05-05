@@ -8,5 +8,8 @@ que la firma es válida. Estos archivos se codifican como archivos .pem
 * Las firmas se generan en formato .pem
 * Las dependencias están listadas en requirements.txt
 * Las credenciales tienen una vigencia fijada por el administrador cuando crea el par de llaves
-* Las firmas tienen una vigencia de 3 dias
+* Los documentos tienen una vigencia, la cual es la fecha límite de firma del mismo
+* Las firmas tienen una vigencia hasta la vigencia del documento firmado
 
+# ATENCION!!!
+* Antes de correr la página es importante correr el código de create_admin, este creará el perfil de admin en la base de datos que se use si no existe en la tabla de Users, en el caso de que exista creará el perfil y generará un código que va a guardar el id del admin y genrará la llave privada que se usa para WTForms, esta llave se puede modificar para algo completamente diferente 
