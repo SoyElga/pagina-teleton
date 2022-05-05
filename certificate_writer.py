@@ -157,7 +157,9 @@ save_directory):
              ln = 2, align = 'L', )
     pdf.cell(200, 10, txt = "Id de la firma: " + id_sign,
              ln = 2, align = 'L', )
-    pdf.cell(200, 10, txt = "Clave de firma: " + signing_key,
+    pdf.cell(200, 10, txt = "Clave de firma: " + signing_key.split(",")[0] + ",",
+             ln = 2, align = 'L', )
+    pdf.cell(200, 10, txt = signing_key.split(",")[1],
              ln = 2, align = 'L', )
     pdf.cell(200, 10, txt = "Nombre del firmante: " + name_signer,
              ln = 2, align = 'L', )
