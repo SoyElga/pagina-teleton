@@ -8,7 +8,84 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 {% endfor %}
-<h1>Home page de admin</h1>
+
+<div class="container">
+  <div class="row justify-content-between">
+      <div class="col-6 ">
+          <h1><b>Bienvenido {{current_user.name}}</b></h1>
+      </div>
+  </div>
+  <br>
+  <br>
+  <div class="row">
+      <h3>Últimos documentos</h3>
+  </div>
+  <div class="row mt-2">
+    {%if files|length == 0%}
+    <h3>No hay documentos registrados</h3>
+    {% else %}
+    {% for i in files%}
+      <div class="card mt-2" style="width: 260px; margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title"><b>{{files[i]["Name"] | short_name(13)}}</b></h5>
+          <hr>
+          <p class="card-text"><b>Fecha de registro: </b>{{files[i]["Date_added"]}}</p>
+          <br>
+          {% if files[i]["Total_signatures"] == files[i]["Valid_signatures"] %}
+            <h5 style="color: green;"><b>Firmado por todos</b></h5>
+          {% else %}
+            {% if files[i]["Validity"] < now%}
+            <h5 style="color: red;">Vencido</h5>
+            {% else %}
+            <h5 style="color: darkgoldenrod;">Vigente</h5>
+            {% endif %}
+          {% endif %}
+          {% if files[i]["Total_signatures"] == files[i]["Valid_signatures"] %}
+          <p class="card-text">Firmas: <span style="color:green"><b>{{files[i]["Valid_signatures"]}}/{{files[i]["Total_signatures"]}}</b></span></p>
+          {% else %}
+          <p class="card-text">Firmas: <span style="color:red"><b>{{files[i]["Valid_signatures"]}}/{{files[i]["Total_signatures"]}}</b></span></p>
+          {% endif %}
+          <a href="{{url_for('document', id=files[i]['File_id'])}}" class="btn btn-warning"><b>Checar documento</b></a>
+        </div>
+      </div>
+    {% endfor %}
+    {% endif%}
+  </div>
+
+  <br>
+  <div class="row">
+      <h3>Certificados de verificación</h3>
+  </div>
+  <div class="row mt-2">
+      {% if certificates | length == 0%}
+      <h5>No hay certificados a tu nombre</h5>
+      {% else %}
+      {% for c in certificates%}
+      <div class="card mt-2" style="width: 260px; margin-left: 10px;">
+          <div class="card-body">
+              <h5 class="card-title"><b>{{c.name}}</b></h5>
+              <hr>
+              {% if c.topic == "public key"%}
+              <p style="color:rgb(69, 69, 69)"><b>Clave Pública</b></p>
+              {% elif c.topic == "signature"%}
+              <p style="color:rgb(69, 69, 69)"><b>Firma de documento</b></p>
+              {% elif c.topic == "verification"%}
+              <p style="color:rgb(69, 69, 69)"><b>Verificación de firma</b></p>
+              {% endif %}
+              <br>
+              <p class="card-text"><b>Fecha de creación: </b>{{c.date_added | is_date}}</p>
+              
+              <a href="{{url_for('download_certificate', id=c.id)}}" class="btn btn-warning"><b>Descargar</b></a>
+              
+          </div>
+      </div>
+      {% endfor %}
+      {% endif%}
+  </div>
+</div>
+<br>
+<br>
+<br>
 
 
 {% endblock %}

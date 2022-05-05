@@ -43,7 +43,7 @@
                 {% elif user["key"].validity > now %}
                 <td> <b style="color:green"> Valida </b></td>
                 {% else %}
-                <td><a class="btn btn-outline-warning" href="{{url_for('generate_user_key', id=user['user'].id)}}">Actualizar Llave</a></td>
+                <td><a class="btn btn-warning" href="{{url_for('generate_user_key', id=user['user'].id)}}"><b>Actualizar Llave</b></a></td>
                 {% endif %}
                 <td><a class="btn btn-outline-secondary" href="{{url_for('update_user', id=user['user'].id)}}">Modificar</a></td>
             </tr>
@@ -51,5 +51,5 @@
         </tbody>
     </table>
     
-    {% endblock %}
 </div>
+    {% endblock %}

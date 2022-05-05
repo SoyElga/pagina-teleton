@@ -2,7 +2,7 @@ from fpdf import FPDF
 from datetime import datetime
 
 version = "2.1.0"
-sign_algorithm = ""
+sign_algorithm = "ECDSA de 256 bits con sha512"
 
 
 def write_public_key_certificate(title,

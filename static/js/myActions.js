@@ -2,7 +2,7 @@
 function reload_button_with_time(time) {
 
     //document.getElementById("disable_on_click").disabled = true;
-    //window.setTimeout(reload_button, time);
+    window.setTimeout(reload_button, time);
 }
 
 function reload_button() {

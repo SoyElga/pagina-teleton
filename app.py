@@ -159,6 +159,9 @@ def index():
 
     if len(signatures) >= 4:
         signatures = signatures[0:4]
+    
+    if len(certificates) >= 4:
+        certificates = certificates[0:4]
 
     return render_template("index.html", keys = keys, now = datetime.now(), signatures=signatures, certificates=certificates)
 
@@ -198,12 +201,14 @@ def logout():
 @app.route("/history")
 @login_required
 def history():
-    return render_template("history.html")
+    signatures = Signatures.query.filter_by(id_signer = current_user.id).all()
+    return render_template("history.html", signatures = signatures, now = datetime.now())
 
 @app.route("/certificates")
 @login_required
 def certificates():
-    return render_template("certificates.html")
+    certificates = Certificates.query.filter_by(display_for = current_user.id).all()
+    return render_template("certificates.html", certificates=certificates)
 
 @app.route("/sign")
 @login_required
@@ -239,29 +244,30 @@ def sign_document(id):
                         sig_write(rs, "signature_files/"+signature.name+"_"+user.user+"_")
                         signature.fingerprint = fingerprint
                         signature.signature_filename = signature.name+"_"+user.user+"_"+"signature.pem"
-                        #dir_certificate = os.path.join(os.path.abspath(os.path.dirname(__file__)),"certificates","signature",
-                        #                                secure_filename("{name_document}_{user}_signature_certificate.pdf".format(name_document=file_db.name.replace(" ", "_"), user=current_user.user)))
-                        #certificate = Certificates(display_for = user.id,
-                        #                           name = "Certificado firma de documento: {}".format(file_db.name),
-                        #                           topic = "signature",
-                        #                           pdf_directory = dir_certificate)
-                        #db.session.add(certificate)
+                        dir_certificate = os.path.join(os.path.abspath(os.path.dirname(__file__)),"certificates","signature",
+                                                        secure_filename("{name_document}_{user}_signature_certificate.pdf".format(name_document=file_db.name.replace(" ", "_"), user=current_user.user)))
+                        certificate = Certificates(display_for = user.id,
+                                                   name = "Certificado firma de documento: {}".format(file_db.name),
+                                                   topic = "signature",
+                                                   pdf_directory = dir_certificate)
+                        db.session.add(certificate)
                         db.session.commit()
-                        #write_sign_document_certificate(title = "Certificado de firma de documento",
-                        #                                id_certificate = str(certificate.id),
-                        #                                id_sign = str(signature.id),
-                        #                                document_name = file_db.name,
-                        #                                date_of_signing = datetime.now().strftime("%m/%d/%Y - %H:%M:%S"),
-                        #                                validity_of_document = file_db.validity.strftime("%m/%d/%Y - %H:%M:%S"),
-                        #                                name_signer = user.name + " " + user.lastname,
-                        #                                user_signer = user.user,
-                        #                                job_signer = user.job,
-                        #                                public_key_signer = key.public_key,
-                        #                                save_directory = dir_certificate)
+                        write_sign_document_certificate(title = "Certificado de firma de documento",
+                                                        id_certificate = str(certificate.id),
+                                                        id_sign = str(signature.id),
+                                                        document_name = file_db.name,
+                                                        date_of_signing = datetime.now().strftime("%m/%d/%Y - %H:%M:%S"),
+                                                        validity_of_document = file_db.validity.strftime("%m/%d/%Y - %H:%M:%S"),
+                                                        name_signer = user.name + " " + user.lastname,
+                                                        user_signer = user.user,
+                                                        job_signer = user.job,
+                                                        public_key_signer = key.public_key,
+                                                        save_directory = dir_certificate)
                         
                         return redirect(url_for('sign'))
-                    except:
+                    except Exception as e:
                         flash("Hubo un error al subir la firma a la base de datos")
+                        print(e)
                         return render_template("sign_document.html", signature=signature, file=file_db,key=key, form=form, now=datetime.now())
                 else:
                     flash("La clave privada no coincide con la de la base de datos")
@@ -297,7 +303,7 @@ def get_keys(id):
     key_db.downloaded = True
 
     #Datos certificado
-    dir_certificate = os.path.join(os.path.abspath(os.path.dirname(__file__)),"certificates","public_key",secure_filename("{user}_private_key_certificate.pdf".format(user=current_user.user)))
+    dir_certificate = os.path.join(os.path.abspath(os.path.dirname(__file__)),"certificates","public_key",secure_filename("{user}_public_key_certificate.pdf".format(user=current_user.user)))
 
     try:
         certificate = Certificates(display_for = current_user.id,
@@ -328,6 +334,12 @@ def get_keys(id):
         print(e)
         return redirect(url_for("index"))
 
+@app.route("/certificate/download/<int:id>")
+@login_required
+def download_certificate(id):
+    certificate = Certificates.query.filter_by(id=id).first()
+    return send_file(certificate.pdf_directory, as_attachment=True)
+
 #Paginas de admin
 @app.route("/admin/home")
 @login_required
@@ -337,7 +349,23 @@ def admin_index():
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
     else:
-        return render_template("index_admin.html")
+        db_files = Files.query.order_by(Files.date_added).all()
+        db_signatures = Signatures.query.order_by(Signatures.date_added).all()
+        files = {}
+        if len(db_files) >= 4:
+            for i in range(4):
+                signatures = [s.id for s in db_signatures if s.id_file == db_files[i].id and s.checked]
+                files[i] = {"Name":db_files[i].name, "Date_added":db_files[i].date_added.strftime("%d/%m/%Y"), "File_id":db_files[i].id, "Validity":db_files[i].validity, "Valid_signatures":len(signatures), "Total_signatures":len(db_files[i].all_signers.split(", "))}    
+        else:
+            for i,file in enumerate(db_files):
+                signatures = [s.id for s in db_signatures if s.id_file == file.id and s.checked]
+                files[i] = {"Name":file.name, "Date_added":file.date_added.strftime("%d/%m/%Y"), "File_id":file.id, "Validity":file.validity, "Valid_signatures":len(signatures), "Total_signatures":len(file.all_signers.split(", "))}
+        
+        certificates = Certificates.query.filter_by(display_for = current_user.id).all()
+        if len(certificates) >= 4:
+            certificates = certificates[0:4]
+        
+        return render_template("index_admin.html", files=files, certificates=certificates, now=datetime.now())
 
 @app.route("/admin/users")
 @login_required
@@ -634,30 +662,33 @@ def verify_signature(id):
         PK_curve_form=P_256()
         PK_curve_form.Q=loaded_public_key
         if verify(signature_tuple,P_256(),PK_curve_form,file.pdf_file):
-            signature.checked = True
-            #signer = Users.query.filter_by(id = signature.id_signer).first()
-            #dir_certificate = os.path.join(os.path.abspath(os.path.dirname(__file__)),"certificates","verification",secure_filename("{document_name}_{signer}_verification_certificate.pdf".format(document_name=file.name.replace(" ", "_").id, signer=signer.user)))
-            #certificate = Certificates(display_for = current_user.id,
-            #                            name = "Certificado Verificación: {}".format(file.name),
-            #                            topic = "verification",
-            #                            pdf_directory = dir_certificate)
-            #db.session.add(certificate)
-            db.session.commit()
-            #write_verification_sign_certificate(title = "Certificado de verificación de firma",
-            #                                    id_certificate = str(certificate.id),
-            #                                    id_sign = str(signature.id),
-            #                                    signing_key = str(hex(signature_tuple[0])) + ", " + str(hex(signature_tuple[1])),
-            #                                    document_name = file.name,
-            #                                    verificator_name = current_user.name + " " + current_user.lastname,
-            #                                    verificator_job = current_user.job,
-            #                                    validity_of_document = file.validity.strftime("%m/%d/%Y - %H:%M:%S"),
-            #                                    name_signer = signer.name + " " + signer.lastname,
-            #                                    user_signer = signer.user,
-            #                                    job_signer = signer.job,
-            #                                    public_key_signer = key.public_key,
-            #                                    save_directory = dir_certificate)
-            flash("Se ha verificado la firma con exito")
-
+            try:
+                signature.checked = True
+                signer = Users.query.filter_by(id = signature.id_signer).first()
+                dir_certificate = os.path.join(os.path.abspath(os.path.dirname(__file__)),"certificates","verification",secure_filename("{document_name}_{signer}_verification_certificate.pdf".format(document_name=file.name.replace(" ", "_"), signer=signer.user)))
+                certificate = Certificates(display_for = current_user.id,
+                                            name = "Certificado Verificación: {}".format(file.name),
+                                            topic = "verification",
+                                            pdf_directory = dir_certificate)
+                db.session.add(certificate)
+                db.session.commit()
+                write_verification_sign_certificate(title = "Certificado de verificación de firma",
+                                                    id_certificate = str(certificate.id),
+                                                    id_sign = str(signature.id),
+                                                    signing_key = str(hex(signature_tuple[0])) + ", " + str(hex(signature_tuple[1])),
+                                                    document_name = file.name,
+                                                    verificator_name = current_user.name + " " + current_user.lastname,
+                                                    verificator_job = current_user.job,
+                                                    validity_of_document = file.validity.strftime("%m/%d/%Y - %H:%M:%S"),
+                                                    name_signer = signer.name + " " + signer.lastname,
+                                                    user_signer = signer.user,
+                                                    job_signer = signer.job,
+                                                    public_key_signer = key.public_key,
+                                                    save_directory = dir_certificate)
+                flash("Se ha verificado la firma con exito")
+            except Exception as e:
+                print(e)
+                flash("La verificación es válida, pero hubo un problema")
             #return send_file(dir_certificate, as_attachment=True)
             return redirect(url_for("document",id=signature.id_file))
         else:
@@ -679,14 +710,30 @@ def delete_document(id):
             os.remove(file.pdf_file)
             db.session.delete(file)
             for s in signatures:
+                os.remove(s.signature_filename)
                 db.session.delete(s)
             db.session.commit()
             flash("Documento y solicitudes de firma borrados con éxito")
             return redirect(url_for("documents"))
-        except:
+        except Exception as e:
+            print(e)
             flash("Hubo un error al borrar el documento")
             return redirect(url_for("document", id=id))
 
+@app.route("/admin/delete_all_certificates")
+@login_required
+def delete_all_certificates():
+    if not current_user.id == 7:
+        #No eres el admin
+        flash("Debes ser admin para tener acceso a esa página")
+        return redirect(url_for("index"))
+    else:
+        certificates = Certificates.query.order_by(Certificates.date_added).all()
+        for c in certificates:
+            db.session.delete(c)
+        db.session.commit()
+        flash("Se borraron todos los certificados de la base de datos")
+        return redirect(url_for("admin_index"))
 
 if __name__ == "__main__":
     app.run()
