@@ -347,7 +347,7 @@ def download_certificate(id):
 @app.route("/admin/home")
 @login_required
 def admin_index():
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -373,7 +373,7 @@ def admin_index():
 @app.route("/admin/users")
 @login_required
 def list_users():
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -395,7 +395,7 @@ def list_users():
 @app.route("/admin/users/add", methods=["GET","POST"])
 @login_required
 def add_user():
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -450,7 +450,7 @@ def add_user():
 @app.route("/admin/users/update/<int:id>", methods=["GET","POST"])
 @login_required
 def update_user(id):
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -477,7 +477,7 @@ def update_user(id):
 @app.route("/admin/users/delete/<int:id>")
 @login_required
 def delete_user(id):
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -503,7 +503,7 @@ def delete_user(id):
 @app.route("/admin/users/generate_keys/<int:id>", methods=["GET", "POST"])
 @login_required
 def generate_user_key(id):
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -528,7 +528,7 @@ def generate_user_key(id):
 @app.route("/admin/upload_document", methods=["GET","POST"])
 @login_required
 def upload_document():
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -594,7 +594,7 @@ def upload_document():
 @app.route("/admin/documents")
 @login_required
 def documents():
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -610,7 +610,7 @@ def documents():
 @app.route("/admin/documents/document/<int:id>")
 @login_required
 def document(id):
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -649,7 +649,7 @@ def public_key_read(public_key_str) -> 'tuple(int,int)':
 @app.route("/admin/documents/document/verify_signature/<int:id>")
 @login_required
 def verify_signature(id):
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
@@ -701,7 +701,7 @@ def verify_signature(id):
 @app.route("/admin/documents/document/delete_document/<int:id>")
 @login_required
 def delete_document(id):
-    if not current_user.id == admin_index:
+    if not current_user.id == admin_id:
         #No eres el admin
         flash("Debes ser admin para tener acceso a esa página")
         return redirect(url_for("index"))
